@@ -59,7 +59,7 @@
 
         function startSocket() {
             window.previewSocket = new WebSocket(
-                `ws://${window.location.host}/ws/preview`
+                `ws://${window.location.hostname}:3500/ws/preview`
             );
 
             previewSocket.onmessage = function (e) {
