@@ -15,15 +15,16 @@ services:
     depends_on:
       - pw
     command: daphne -b 0.0.0.0 -p 8000 byos_django.asgi:application
+
   pw:
     image: mcr.microsoft.com/playwright:focal
     container_name: pw
-    user: pwuser
     init: true
     volumes:
-      - pw_home:/home/pwuser
+      - pw_home:/pw_data
     command: >
-      sh -c "chown -R pwuser /home/pwuser/.npm &&
+      sh -c "mkdir -p /pw_data/.npm &&
+      npm config set cache /pw_data/.npm &&
       npx -y playwright@1.50.0 run-server --port 3000 --host 0.0.0.0"
 
   nginx:
