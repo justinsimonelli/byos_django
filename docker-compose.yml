@@ -29,7 +29,7 @@ services:
     command: >
       sh -c "mkdir -p /pw_data/.npm &&
       npm config set cache /pw_data/.npm &&
-      npx -y playwright@1.50.0 run-server --port 3000 --host 0.0.0.0"
+      npx -y playwright@1.50.0 run-server --host 0.0.0.0"
 
   nginx:
     build:
