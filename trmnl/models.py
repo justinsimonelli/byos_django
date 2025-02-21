@@ -84,23 +84,35 @@ class Screen(models.Model):
         folder = tempfile.mkdtemp()
 
         with sync_playwright() as p:
-            if settings.PW_SERVER:
-                browser = p.firefox.connect(ws_endpoint=settings.PW_SERVER)
-            else:
-                browser = p.firefox.launch(
-                    headless=True,
-                    args=["--window-size=800,480", "--disable-web-security"],
-                )
-            page = browser.new_page()
-            page.set_viewport_size({"width": 800, "height": 480})
+            browser = None
+            try:
+                if settings.PW_SERVER:
+                    browser = p.firefox.connect(ws_endpoint=settings.PW_SERVER)
+                else:
+                    browser = p.firefox.launch(
+                        headless=True,
+                        args=[
+                            "--window-size=800,480",
+                            "--disable-web-security",
+                            "--disable-gpu",
+                            "--no-sandbox",
+                            "--single-process",
+                        ],
+                    )
 
-            page.set_content(self.html)
-            page.evaluate(
-                'document.getElementsByTagName("html")[0].style.overflow = "hidden";'
-                'document.getElementsByTagName("body")[0].style.overflow = "hidden";'
-            )
-            page.screenshot(path=f"/{folder}/screen.png")
-            browser.close()
+                context = browser.new_context()
+                page = context.new_page()
+                page.set_viewport_size({"width": 800, "height": 480})
+
+                page.set_content(self.html)
+                page.evaluate(
+                    'document.getElementsByTagName("html")[0].style.overflow = "hidden";'
+                    'document.getElementsByTagName("body")[0].style.overflow = "hidden";'
+                )
+                page.screenshot(path=f"/{folder}/screen.png")
+            finally:
+                if browser:
+                    browser.close()
 
         with Image(filename=f"/{folder}/screen.png") as img:
             img.posterize(2, dither="floyd_steinberg")

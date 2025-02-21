@@ -16,7 +16,7 @@ services:
       - pw
     command: daphne -b 0.0.0.0 -p 8000 byos_django.asgi:application
   pw:
-    image: mcr.microsoft.com/playwright:v1.50.0-noble
+    image: mcr.microsoft.com/playwright:focal
     container_name: pw
     user: pwuser
     init: true
