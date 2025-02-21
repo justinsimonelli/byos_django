@@ -20,6 +20,10 @@ services:
     image: mcr.microsoft.com/playwright:focal
     container_name: pw
     init: true
+    ports:
+      - "3000:3000"
+    environment:
+      - WEBSOCKET_HOST=0.0.0.0
     volumes:
       - pw_home:/pw_data
     command: >
